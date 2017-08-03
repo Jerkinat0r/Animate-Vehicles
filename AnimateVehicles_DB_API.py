@@ -1,25 +1,4 @@
 # -*- coding: utf-8 -*-
-
-"""This script takes two timepoints t0, t1 and a time step.
-   For each timepoint t between t0 and t1 in steps of the given time step,
-   it then displays markers at the locations
-   of all vehicle journeys in the network at time point t. The attributes
-   that are displayed for each vehjourney can be configured by changing function
-   addVehJourneyMarker. The script inserts count locations as markers, so these network
-   objects should not be used for other purposes in the network.
-   Screenshots of the displays are saved to JPG files. The script prompts the
-   user for a base file name and appends the time (in seconds) to it.
-
-
-   Requirements:
-   1) Visum model must contain a PuT timetable.
-   2) For best results load the graphics parameters vehjourneylocations.gpa. Load
-      selectively the settings for count locations and make that layer visible.
-   3) Requires the VisumPy library.
-   4) To create a movie sequence out of the screenshots you require a tool such as MakeAVI.
-      This tool is open source and can be downloaded for free at http://makeavi.sourceforge.net/.
-
-"""
 import os,sys
 from VisumPy.helpers import GetMulti, secs2HHMMSS, HHMMSS2secs
 from VisumPy.Tk import *
