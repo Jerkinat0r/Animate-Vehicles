@@ -15,8 +15,7 @@
       selectively the settings for count locations and make that layer visible.
    3) Requires the VisumPy library.
    4) To create a movie sequence out of the screenshots you require a tool such as MakeAVI.
-      This tool is open source and can be downloaded for free at http://makeavi.sourceforge.net/.
-"""
+      This tool is open source and can be downloaded for free at http://makeavi.sourceforge.net/."""
 import os,sys
 from VisumPy.helpers import GetMulti, secs2HHMMSS, HHMMSS2secs
 from VisumPy.Tk import *
@@ -25,7 +24,6 @@ import tkFileDialog
 
 class Window:
     def __init__(self):
-
         self.root = Tk.Tk()
         Tk.Label(self.root,text="Please specify the following options for the MaaS animations.").pack()
         Tk.Label(self.root,text="").pack()
@@ -42,7 +40,7 @@ class Window:
         Tk.Label(frame,text="Starttime (hour:min:sec):",relief=Tk.SUNKEN).grid(row=3,column=0,sticky=Tk.W+Tk.E)
         self.entry_st = range(3)
         for i,t in zip(range(3),["06","00","00"]):
-        self.entry_st[i] = Tk.Entry(frame,justify=Tk.CENTER,relief=Tk.SUNKEN)
+            self.entry_st[i] = Tk.Entry(frame,justify=Tk.CENTER,relief=Tk.SUNKEN)
             self.entry_st[i].insert(0, t)
             self.entry_st[i].grid(row=3,column=1+i,sticky=Tk.W+Tk.E)
 
@@ -54,9 +52,7 @@ class Window:
             self.entry_et[i].grid(row=4,column=1+i,sticky=Tk.W+Tk.E)
         Tk.Label()
 
-
-
-        #OK-Button:
+        # OK-Button:
         Tk.Label(self.root,text="").pack()
         Tk.Button(self.root,text="OK",command=self.ok).pack()
 
@@ -67,7 +63,6 @@ class Window:
         self.endtime = datetime(2017,1,1,int(self.entry_et[0].get()),int(self.entry_et[1].get()),int(self.entry_et[2].get()))
         self.timestep = int(self.e1.get())
         self.root.destroy()
-
 
 def sectoclock(t):
 
@@ -98,8 +93,7 @@ def getVehJourneyPos(vehjourney, time):
         time of the vehjourney.
 
     vehjourney - object - a vehicle journey
-    time - integer - current time in seconds from midnight
-    """
+    time - integer - current time in seconds from midnight """
 
     vjarr = vehjourney.AttValue("ARR")
     vjdep = vehjourney.AttValue("DEP")
@@ -116,14 +110,8 @@ def getVehJourneyPos(vehjourney, time):
     # ------- Hier gewünschtes Attribut einfügen, welches für die Klassifizierte Darstellung der Zählstellen verwendet wird -----------
     vjishvol= GetMulti(vjitems, "VOL(AP)") # von SHVOL geändert [JS]
 
-    #Get attribute SHVOL for
+    # Get attribute SHVOL for
     shvol = None
-    # found = False
-    # for i in xrange(1,len(vjitems.GetAll)-1): # all except first and last item
-        # if vjiarr[i] <= time <= vjidep[i]:
-            # shvol   = vjishvol[i]
-            # found   = True
-            # break
 
     # check whether vehjourney is stopping somewhere
     found = False
