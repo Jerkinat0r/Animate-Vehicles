@@ -255,7 +255,7 @@ def displayAllVehJourneys(time, allvj):
                 fo.write(tmp_string+"\n")
 
     Visum.LoadNet(netfile,True)
-    # os.remove(netfile)
+    os.remove(netfile)
 
 
 def clearVehJourneyMarkers():
