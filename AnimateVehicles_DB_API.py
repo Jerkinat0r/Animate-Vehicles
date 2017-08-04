@@ -114,7 +114,7 @@ def getVehJourneyPos(vehjourney, time):
     vjidep = GetMulti(vjitems, "DEP")
     vjiidx = GetMulti(vjitems, "TIMEPROFILEITEM\\LINEROUTEITEM\\INDEX")
     
-    # ------- Hier gewünschtes Attribut einfügen, welches für die Klassifizierte Darstellung der Zählstellen verwendet wird -----------
+    # ---- Hier gewünschtes Attribut einfügen, welches für die Klassifizierte Darstellung der Zählstellen verwendet wird
     vjishvol = GetMulti(vjitems, "VOL(AP)") # von SHVOL geändert [JS]
 
     # Get attribute SHVOL for
@@ -125,10 +125,10 @@ def getVehJourneyPos(vehjourney, time):
     for i in xrange(1, len(vjitems.GetAll)-1):  # all except first and last item
         if vjiarr[i] <= time <= vjidep[i]:
             fromidx = vjiidx[i]
-            shvol   = vjishvol[i]
-            toidx   = vjiidx[i+1]
-            offset  = 0.0
-            found   = True
+            shvol = vjishvol[i]
+            toidx = vjiidx[i+1]
+            offset = 0.0
+            found = True
             break
 
     # if not found, vehjourney must be between stops. Where?
@@ -136,8 +136,8 @@ def getVehJourneyPos(vehjourney, time):
         for i in xrange(len(vjitems.GetAll)-1):
             if vjidep[i] <= time <= vjiarr[i+1]:
                 fromidx = vjiidx[i]
-                shvol   = vjishvol[i]
-                toidx   = vjiidx[i+1]
+                shvol = vjishvol[i]
+                toidx = vjiidx[i+1]
                 if vjiarr[i+1] - vjidep[i] > 0:
                     offset = (time-vjidep[i]) / (vjiarr[i+1] - vjidep[i])
                 else:
@@ -156,7 +156,7 @@ def getVehJourneyPos(vehjourney, time):
     nodenos = []
     lengths = []
     fromidx = int(fromidx)
-    toidx   = int(toidx)
+    toidx = int(toidx)
     # CAUTION: in the zero-based Python array the first item is at position fromidx-1,
     # the last item is at toidx-1!!
     # first item can be on node or link
@@ -223,17 +223,17 @@ def addVehJourneyMarker(vehjourney, fromnode, tonode, relpos, shvol):
     # cloc.SetAttValue("NAME", secs2HHMMSS(vehjourney.AttValue("DEP")))
 
     # number, fromnodeno, tonodeno, linkno wurden als float ausgegeben --> int(...)
-    number    =    int(vehjourney.AttValue("NO"))
-    code    =    vehjourney.AttValue("NAME_TEMP")
-    name    =    secs2HHMMSS(vehjourney.AttValue("DEP"))
-    fromnodeno    =    int(fromnode.AttValue("NO"))
-    tonodeno    =    int(tonode.AttValue("NO"))
-    linkno    =     int(Visum.Net.Links.ItemByKey(fromnodeno,tonodeno).AttValue("NO"))
-    # if shvol==None:                                                
-         # shvol=Visum.Net.VehicleJourneyItems.AttValue("VOL(AP)")
+    number = int(vehjourney.AttValue("NO"))
+    code = vehjourney.AttValue("NAME_TEMP")
+    name = secs2HHMMSS(vehjourney.AttValue("DEP"))
+    fromnodeno = int(fromnode.AttValue("NO"))
+    tonodeno = int(tonode.AttValue("NO"))
+    linkno = int(Visum.Net.Links.ItemByKey(fromnodeno, tonodeno).AttValue("NO"))
+    # if shvol == None:
+        # shvol = Visum.Net.VehicleJourneyItems.AttValue("VOL(AP)")
 
-    tmp_string = str(number)+";"+str(code)+";"+str(name)+";"+str(linkno)+";"+str(fromnodeno)+";"+str(tonodeno)+";"+str(relpos)+";"+str(shvol)
-
+    tmp_string = ";".join([str(number), str(code), str(name), str(linkno),
+                           str(fromnodeno), str(tonodeno), str(relpos), str(shvol)])
     return tmp_string
 
 
@@ -244,7 +244,8 @@ def displayAllVehJourneys(time, allvj):
     netfile = Visum.GetPath(1) + "add_vehicles.net"
     with open(netfile, "w") as fo:
         # Write net file to add vehicles as countlocations:
-        fo.write(u"$VISION\n$VERSION:VERSNR;FILETYPE;LANGUAGE;UNIT\n10;Net;ENG;KM\n$COUNTLOCATION:NO;CODE;NAME;LINKNO;FROMNODENO;TONODENO;RELPOS;number_of_passengers\n")
+        fo.write("$VISION\n$VERSION:VERSNR;FILETYPE;LANGUAGE;UNIT\n10;Net;ENG;KM\n$COUNTLOCATION:NO;CODE;"  # u davor?
+                 "NAME;LINKNO;FROMNODENO;TONODENO;RELPOS;number_of_passengers\n")  # letzte Position ggfs. anpassen
 
         for i, vj in enumerate(allvj):
             fromnode, tonode, relpos, shvol = getVehJourneyPos(vj, time)
@@ -254,13 +255,10 @@ def displayAllVehJourneys(time, allvj):
                 fo.write(tmp_string+"\n")
 
     Visum.LoadNet(netfile,True)
-    os.remove(netfile)
+    # os.remove(netfile)
 
 
 def clearVehJourneyMarkers():
-    # allcloc = Visum.Net.CountLocations.GetAll
-    # for cloc in allcloc:
-        # Visum.Net.RemoveCountLocation(cloc)
     Visum.Net.CountLocations.RemoveAll()
 
 # Main program
@@ -268,7 +266,6 @@ def clearVehJourneyMarkers():
 
 
 def main():
-
     # Ask and load the pfd file:
     messageBox("Please choose the path of the Project File Directory (.pfd) of your project." +
                "Please be sure that all paths are set correctly to the current project folder.")
@@ -286,14 +283,14 @@ def main():
     # muss zu gpa-Einstellungen bei Zählstellen passen; bzw. andersrum
     '''
     try:
-        Visum.Net.CountLocations.AddUserDefinedAttribute("number_of_passengers","number_of_passengers","number_of_passengers", 240) # funktioniert nicht
+        Visum.Net.CountLocations.AddUserDefinedAttribute("number_of_passengers", "number_of_passengers", 
+                                                         "number_of_passengers", 240)  # funktioniert nicht
     except:
         pass
     '''
     # count_loc_uda = "number_of_passengers"
     # Visum.Net.CountLocations.AddUserDefinedAttribute(count_loc_uda,count_loc_uda,count_loc_uda,2,2)
-    
-    # hinzugefügt [JS]
+
     # Visum.Net.GraphicParameters.Open("D02_Zoom_Linienwege_mit_Legende.gpa")
     # Visum.Net.GraphicParameters.OpenXML("AnimVeh_mBeschr_Quadr.gpax")
     
@@ -301,11 +298,11 @@ def main():
     xmin, ymin, xmax, ymax = Visum.Graphic.GetWindow()
     nodenomax = int(max(GetMulti(Visum.Net.Nodes, "No")))+1
     Visum.Net.AddNode(nodenomax)  # setzt Umlegung zwangsläufig zurück
-    Visum.Net.Nodes.ItemByKey(nodenomax).SetAttValue("Name", "Time")
-    Visum.Net.Nodes.ItemByKey(nodenomax).SetAttValue("xcoord", xmin + 0.08*(xmax-xmin))  # war 0.1
-    Visum.Net.Nodes.ItemByKey(nodenomax).SetAttValue("ycoord", ymin + 0.95*(ymax-ymin))  # war 0.93
+    time_node = Visum.Net.Nodes.ItemByKey(nodenomax)
+    time_node.SetAttValue("Name", "Time")
+    time_node.SetAttValue("xcoord", xmin + 0.08*(xmax-xmin))  # war 0.1
+    time_node.SetAttValue("ycoord", ymin + 0.95*(ymax-ymin))  # war 0.93
 
-    # hinzugefügt [JS]
     # Visum.Procedures.Open(Visum.GetPath(12)+"D02_V05_UmlegungOEV_Kapazitaetsbeschraenkung.par")
     # Visum.Procedures.Execute()
     # Legenden-Parameter lesen, wie? --> in .gpa oben integriert [JS]
@@ -314,15 +311,6 @@ def main():
     NodeFilter.UseFilter = True
     NodeFilter.Init()
     NodeFilter.AddCondition("OP_NONE", False, "NO","EqualVal", nodenomax)
-    
-    # auskommentiert [JS]
-    ''' 
-    #Set filter to "AV" countlocations: 
-    CountLocationFilter = Visum.Filters.CountLocationFilter()
-    CountLocationFilter.Init()
-    CountLocationFilter.UseFilter = True
-    CountLocationFilter.AddCondition("OP_NONE", False, "Code","EqualVal","AV")
-    '''
 
     # Ask for time interval:
     a = Window()
@@ -337,13 +325,9 @@ def main():
     t1 = HHMMSS2secs(t1)
     step = int(timestep)
 
-    basePath = r".\neu"
     basefilename = "DB_API_.jpg"
     basefilename, ext = os.path.splitext(basefilename)
     graphicsPath = Visum.GetPath(33)
-
-    if os.path.abspath(basePath):
-        basePath = os.path.join(graphicsPath, basePath)
 
     allvj = Visum.Net.VehicleJourneys.GetAllActive
     pb = ProgressDlg("Creating images")
@@ -354,12 +338,12 @@ def main():
     for i, t in enumerate(xrange(t0, t1, step)):
         pb.setMessage("Write jpg: ", icount, n_tot)
         icount += 1
-        Visum.Net.Nodes.ItemByKey(nodenomax).SetAttValue("Name", sectoclock(t))
+        time_node.SetAttValue("Name", sectoclock(t))
         clearVehJourneyMarkers()
         displayAllVehJourneys(t, allvj)
         try:
             fileName = "%s%s%s" % (basefilename, sectoclock2(t), ext)
-            filePath = os.path.join(Visum.GetPath(33) + "neu", fileName)
+            filePath = os.path.join(graphicsPath + "neu", fileName)  # Pfad zu neuen Screenshots
             Visum.Graphic.Screenshot(filePath)
         except:
             break
@@ -374,6 +358,6 @@ def main():
     Visum.Net.CountLocations.RemoveAll() 
     # Visum.Net.CountLocations.DeleteUserDefinedAttribute(count_loc_uda)
     # Remove node for drawing time:
-    Visum.Net.RemoveNode(Visum.Net.Nodes.ItemByKey(nodenomax))
+    Visum.Net.RemoveNode(time_node)
 
 main()
