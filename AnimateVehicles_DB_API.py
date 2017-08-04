@@ -307,7 +307,7 @@ def main():
 
     # hinzugefügt [JS]
     # Visum.Procedures.Open(Visum.GetPath(12)+"D02_V05_UmlegungOEV_Kapazitaetsbeschraenkung.par")
-    Visum.Procedures.Execute()
+    # Visum.Procedures.Execute()
     # Legenden-Parameter lesen, wie? --> in .gpa oben integriert [JS]
     
     NodeFilter = Visum.Filters.NodeFilter()
